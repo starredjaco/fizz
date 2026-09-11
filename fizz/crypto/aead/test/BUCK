@@ -53,6 +53,17 @@ fizz_cpp_unittest(
     ],
 )
 
+fizz_cpp_unittest(
+    name = "crypto_util_test",
+    srcs = [
+        "CryptoUtilTest.cpp",
+    ],
+    deps = [
+        "//fizz/crypto/aead:cryptoutil",
+        "//folly/portability:gtest",
+    ],
+)
+
 fizz_cpp_binary(
     name = "crypto_util_bench",
     srcs = [
