@@ -1,4 +1,4 @@
-load("@fbsource//xplat/fizz:defs.bzl", "fizz_cpp_library", "fizz_cpp_unittest")
+load("@fbsource//xplat/fizz:defs.bzl", "fizz_cpp_binary", "fizz_cpp_library", "fizz_cpp_unittest")
 
 oncall("secure_pipes")
 
@@ -50,5 +50,17 @@ fizz_cpp_unittest(
         "//fizz/crypto/aead:iobuf",
         "//folly/io:iobuf",
         "//folly/portability:gtest",
+    ],
+)
+
+fizz_cpp_binary(
+    name = "crypto_util_bench",
+    srcs = [
+        "CryptoUtilBench.cpp",
+    ],
+    deps = [
+        "//fizz/crypto/aead:cryptoutil",
+        "//folly:benchmark",
+        "//folly/init:init",
     ],
 )
