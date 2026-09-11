@@ -38,8 +38,10 @@ fizz_cpp_library(
     exported_deps = [
         ":aead",
         ":iobuf",
+        "//fizz/util:logging",
         "//folly:conv",
         "//folly:memory",
         "//folly:range",
+        "//folly/lang:bits",
     ],
 )

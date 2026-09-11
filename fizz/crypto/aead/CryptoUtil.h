@@ -10,22 +10,32 @@
 
 #include <fizz/crypto/aead/Aead.h>
 #include <fizz/crypto/aead/IOBufUtil.h>
+#include <fizz/util/Logging.h>
 #include <folly/Conv.h>
 #include <folly/Memory.h>
 #include <folly/Range.h>
+#include <folly/lang/Bits.h>
 
 namespace fizz {
 
 template <size_t kMaxIVLength>
 std::array<uint8_t, kMaxIVLength>
 createIV(uint64_t seqNum, size_t ivLength, folly::ByteRange trafficIvKey) {
+  FIZZ_DCHECK_GE(ivLength, sizeof(uint64_t));
+  FIZZ_DCHECK_LE(ivLength, kMaxIVLength);
+  FIZZ_DCHECK_EQ(trafficIvKey.size(), ivLength);
   std::array<uint8_t, kMaxIVLength> iv;
   uint64_t bigEndianSeqNum = folly::Endian::big(seqNum);
   const size_t prefixLength = ivLength - sizeof(uint64_t);
-  memset(iv.data(), 0, prefixLength);
-  memcpy(iv.data() + prefixLength, &bigEndianSeqNum, sizeof(uint64_t));
-  folly::MutableByteRange mutableIv{iv.data(), ivLength};
-  XOR(trafficIvKey, mutableIv);
+  // The nonce is the sequence number left padded with zeroes to ivLength,
+  // XORed with the traffic IV key. XORing the zero padding is just a copy of
+  // the key's leading bytes, so only the sequence number itself needs XORing,
+  // and it is always the final sizeof(uint64_t) bytes.
+  memcpy(iv.data(), trafficIvKey.data(), prefixLength);
+  folly::storeUnaligned<uint64_t>(
+      iv.data() + prefixLength,
+      bigEndianSeqNum ^
+          folly::loadUnaligned<uint64_t>(trafficIvKey.data() + prefixLength));
   return iv;
 }
 
