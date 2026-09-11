@@ -8,6 +8,8 @@
 
 #include <fizz/util/Status.h>
 
+#include <folly/ExceptionWrapper.h>
+
 namespace fizz {
 
 FOLLY_PUSH_WARNING

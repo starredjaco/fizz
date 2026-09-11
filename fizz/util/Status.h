@@ -10,8 +10,11 @@
 
 #include <fizz/record/Alerts.h>
 #include <fizz/util/Exceptions.h>
-#include <folly/ExceptionWrapper.h>
 #include <folly/Optional.h>
+
+namespace folly {
+class exception_wrapper;
+}
 
 namespace fizz {
 
